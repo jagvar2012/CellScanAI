@@ -2,6 +2,17 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <style>
+.upload-button {
+  display: inline-block;
+  background: #2563eb;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+}
+</style>
   <link href="https://fonts.googleapis.com/css2?family=Cedarville+Cursive&family=Doto:wght@100..900&family=Press+Start+2P&display=swap" rel="stylesheet">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>CellScan AI</title>
@@ -61,7 +72,10 @@
     <h1>🧬 CellScan AI</h1>
     <p>Educational Blood Cell Image Classifier</p>
 
-    <input type="file" id="upload" accept="image/*">
+    <label for="imageUpload" class="upload-button">
+  Upload Blood Cell Image
+</label>
+<input type="file" id="imageUpload" accept="image/*" hidden>
 
     <br>
 
