@@ -85,11 +85,11 @@
 
         document.getElementById("result").innerText =
           "AI model loaded successfully!";
-      } catch (error) {
-        document.getElementById("result").innerText =
-          "Model not found. Check your model folder.";
-        console.error(error);
-      }
+     } catch (error) {
+  document.getElementById("result").innerText =
+    "Model loading error: " + error.message;
+  console.error("Model loading error:", error);
+}
     }
 
     const upload = document.getElementById("upload");
