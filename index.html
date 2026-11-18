@@ -1,0 +1,156 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CellScan AI</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #101827;
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .app {
+      max-width: 420px;
+      margin: auto;
+      background: #1e293b;
+      padding: 22px;
+      border-radius: 18px;
+    }
+
+    h1 { color: #38bdf8; }
+
+    button, input {
+      margin: 12px 0;
+      padding: 12px;
+      border-radius: 9px;
+      max-width: 100%;
+    }
+
+    button {
+      background: #0284c7;
+      color: white;
+      border: none;
+      font-size: 16px;
+    }
+
+    img {
+      max-width: 100%;
+      border-radius: 12px;
+      margin-top: 15px;
+    }
+
+    #result {
+      margin-top: 20px;
+      padding: 15px;
+      background: #334155;
+      border-radius: 12px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <h1>🧬 CellScan AI</h1>
+    <p>Educational Blood Cell Image Classifier</p>
+
+    <input type="file" id="upload" accept="image/*">
+
+    <br>
+
+    <img id="preview" style="display:none">
+
+    <br>
+
+    <button onclick="analyse()">Analyse Image</button>
+
+    <div id="result">Loading AI model...</div>
+  </div>
+
+  <script>
+    let model;
+
+    async function loadAI() {
+      try {
+        model = await tmImage.load(
+          "./model/model.json",
+          "./model/metadata.json"
+        );
+
+        document.getElementById("result").innerText =
+          "AI model loaded successfully!";
+      } catch (error) {
+        document.getElementById("result").innerText =
+          "Model not found. Check your model folder.";
+        console.error(error);
+      }
+    }
+
+    const upload = document.getElementById("upload");
+    const preview = document.getElementById("preview");
+
+    upload.addEventListener("change", function() {
+      const file = upload.files[0];
+      if (!file) return;
+
+      preview.src = URL.createObjectURL(file);
+      preview.style.display = "block";
+
+      document.getElementById("result").innerText =
+        "Image ready for analysis.";
+    });
+
+    async function analyse() {
+      if (!model) {
+        alert("Please wait for the AI model to load.");
+        return;
+      }
+
+      if (!upload.files.length) {
+        alert("Please upload an image first.");
+        return;
+      }
+
+      document.getElementById("result").innerText =
+        "Analysing image...";
+
+      try {
+        const predictions = await model.predict(preview);
+
+        predictions.sort(
+          (a, b) => b.probability - a.probability
+        );
+
+        const best = predictions[0];
+        const confidence =
+          (best.probability * 100).toFixed(1);
+
+        if (best.probability < 0.65) {
+          document.getElementById("result").innerText =
+            "Uncertain result. The model needs more information.";
+          return;
+        }
+
+        document.getElementById("result").innerHTML =
+          "<h3>AI Prediction</h3>" +
+          "<p>" + best.className + "</p>" +
+          "<p>Model confidence: " + confidence + "%</p>" +
+          "<p>Educational use only. Not a medical diagnosis.</p>";
+
+      } catch (error) {
+        document.getElementById("result").innerText =
+          "Could not analyse this image.";
+        console.error(error);
+      }
+    }
+
+    loadAI();
+  </script>
+</body>
+</html>
